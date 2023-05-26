@@ -26,7 +26,7 @@ def show_channel_0():
                 print(mid.tracks[0][i], mid.tracks[0][i].type)
     # if i.type == 'set_tempo':
     # print(i)
-
+show_channel_0()
 # data  = mid.tracks
 # d = np.array(data)
 # for m in mid.tracks[0][:60]:
