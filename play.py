@@ -68,10 +68,7 @@ while True:
     if (time.time()-start) > first_beat_time + i * 60/tempo:
         if all[i] == 'l':
             pygame.mixer.Sound.play(low_sound)
-<<<<<<< HEAD
 
-=======
->>>>>>> 0a787ccb2bf838fb3dc1652da633772b4ba5d480
         if all[i] == 'h':
             pygame.mixer.Sound.play(high_sound)
         i += 1
