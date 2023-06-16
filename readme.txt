@@ -8,3 +8,6 @@ send_rgb    ->  與LED溝通
 others
 meltowav -> 將頻譜圖轉成wav檔聽聲音
 different music -> 給不同歌，可以跑出onset_env
+
+
+取平均，找相對高低，Z分數
