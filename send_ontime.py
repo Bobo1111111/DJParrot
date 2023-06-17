@@ -5,6 +5,14 @@ import time
 import numpy as np
 import serial
 import pygame
+
+# some dunction for music analysis
+def norm(x):
+    return (x-np.min(x))/(np.max(x)-np.min(x))
+
+def moving_average(x, w):
+    return np.convolve(x, np.ones(w), 'valid') / w
+
 def strength_fre(y,sr,fmax,fmin):
     return librosa.onset.onset_strength(y=y,sr=sr,fmax=fmax,fmin=fmin)
 
@@ -13,11 +21,6 @@ COM_PORT = 'COM4'    # 指定通訊埠名稱
 BAUD_RATES = 9600    # 設定傳輸速率
 ser = serial.Serial(COM_PORT, BAUD_RATES)   # 初始化序列通訊埠
 
-# some dunction for music analysis
-def norm(x):
-    return (x-np.min(x))/(np.max(x)-np.min(x))
-def moving_average(x, w):
-    return np.convolve(x, np.ones(w), 'valid') / w
 
 # get data from mp3 file
 filename = 'res/spectre-copyrighted-ncs-release.mp3'
@@ -82,6 +85,7 @@ pygame.mixer.music.load(filename)
 pygame.mixer.music.play()
 print("start")
 start_time = time.time()
+
 index = 0
 while True:
     if time.time() - start_time > frame_times[index]:
