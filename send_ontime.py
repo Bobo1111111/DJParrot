@@ -17,7 +17,7 @@ def strength_fre(y,sr,fmax,fmin):
     return librosa.onset.onset_strength(y=y,sr=sr,fmax=fmax,fmin=fmin)
 
 
-COM_PORT = 'COM4'    # 指定通訊埠名稱
+COM_PORT = 'COM3'    # 指定通訊埠名稱
 BAUD_RATES = 9600    # 設定傳輸速率
 ser = serial.Serial(COM_PORT, BAUD_RATES)   # 初始化序列通訊埠
 

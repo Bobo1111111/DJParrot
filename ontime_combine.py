@@ -23,11 +23,11 @@ def strength_fre(y,sr,fmax,fmin):
 
 # Serial init
 
-COM_PORT_LED = 'COM4'
-COM_PORT_MOTOR = 'COM5'
+COM_PORT_LED = 'COM3'
+COM_PORT_MOTOR = 'COM10'
 BAUD_RATES = 9600
 
-ser_LED = serial.Serial(COM_PORT_LED, BAUD_RATES)
+# ser_LED = serial.Serial(COM_PORT_LED, BAUD_RATES)
 ser_MOTOR = serial.Serial(COM_PORT_MOTOR, BAUD_RATES)
 
 # get data from mp3 file
@@ -129,7 +129,7 @@ all_num = np.array(all)
 all_num = all_num.reshape((-1,4))
 
 # time: beat_times; send: all
-
+print(all_num)
 
 full_send_time = []
 full_send_action = []
@@ -158,6 +158,14 @@ while index_motor < len(beat_times):
         ser_MOTOR.write(bytes(all[index_motor],'utf-8'))
         index_motor += 1
     
-    if time.time() - start_time > frame_times[index_LED]:
-        ser_LED.write(bytes(to_send[index_LED],'utf-8'))
-        index_LED += 1
+    if ser_MOTOR.in_waiting:
+        feedback = ser_MOTOR.readline().decode()  # 接收回應訊息並解碼+
+        print(f'{feedback}')
+    
+    # if time.time() - start_time > frame_times[index_LED]:
+    #     ser_LED.write(bytes(to_send[index_LED],'utf-8'))
+    #     index_LED += 1
+
+    # if ser_LED.in_waiting:
+    #     feedback = ser_LED.readline().decode()  # 接收回應訊息並解碼+
+    #     print(f'{feedback}')
