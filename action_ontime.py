@@ -12,82 +12,97 @@ from oo import *
 filename = 'res/spectre-copyrighted-ncs-release.mp3'
 y, sr = librosa.load(filename)
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
+# print(beat_frames)
 beat_times = librosa.frames_to_time(beat_frames, sr=sr)
 first_beat_time = beat_times[0]
 
 onset_data = strength_fre(y,sr,1000,0)
 
+# some dunction for music analysis
+def norm(x):
+    return (x-np.min(x))/(np.max(x)-np.min(x))
+def moving_average(x, w):
+    return np.convolve(x, np.ones(w), 'valid') / w
+
+low = np.array(strength_fre(y,sr,1000,0))
+mid = np.array(strength_fre(y,sr,2000,1000))
+high = np.array(strength_fre(y,sr,3000,2000))
+
+# normalize all data first
+low = norm(low)
+mid = norm(mid)
+high = norm(high)
+
+#  get the length of the data
+length = len(low)
+
+# know the exact time of each frame
+frame = range(0,length)
+frame_times = librosa.frames_to_time(frame, sr=sr)
+
+# cut the light too low
+for i in range(0,length):
+    low[i] = low[i] if low[i] >50/255 else 0
+    mid[i] = mid[i] if mid[i] >50/255 else 0
+    high[i] = high[i] if high[i] >50/255 else 0
+
+# from 0-1 to 0-255
+r = np.intc(low *255)
+g = np.intc(mid *255)
+b = np.intc(high *255)
+
+# 想計算一拍間有幾個重拍
+strong_beat_number = []
+for i in range(0,len(beat_frames)-1):
+    strong_beat_number.append(0)
+    for j in r[beat_frames[i]:beat_frames[i+1]]:
+        if j > 0:
+            strong_beat_number[i] += 1
+
+
 # 存每個beat是大或小
 all = []
 
-low = []
-low_stg = []
-high = []
-high_stg  = []
 threshold = 6
 if onset_data[beat_frames[0]] >= threshold:
-    high.append(beat_frames[0])
-    high_stg.append(onset_data[beat_frames[0]])
     all.append('h')
 else:
-    low.append(beat_frames[0])
-    low_stg.append(onset_data[beat_frames[0]])
     all.append('l')
 
 for i in range(1,len(beat_frames)):
     if onset_data[beat_frames[i]] >= threshold or (onset_data[beat_frames[i]] - onset_data[beat_frames[i-1]] >1.5 and onset_data[beat_frames[i]]>3):
-        high.append(beat_frames[i])
-        high_stg.append(onset_data[beat_frames[i]])
         all.append('h')
-
     else:
-        low.append(beat_frames[i])
-        low_stg.append(onset_data[beat_frames[i]])
         all.append('l')
 
-low_time = librosa.frames_to_time(low, sr=sr)
-high_time = librosa.frames_to_time(high, sr=sr)
+for i in range(0,len(all)-1):
+    if strong_beat_number[i] >= 6:
+        all[i] = 'c'
+# print(all)
+all_num = np.array(all)
+all_num = all_num.reshape((-1,4))
+print(all_num)
+print(len(beat_times))
+print(len(all))
+print(all_num.shape)
+
+'''
+h: 重拍
+l: 輕拍
+c: 碎拍
+'''
 
 # each time of the beat
 beat_times = librosa.frames_to_time(beat_frames, sr=sr)
-length_beat = len(beat_frames)
+length_beat = len(beat_times)
 
-word_beat = ''
-for i in range(0,length_beat):
-    word_beat += str(round(beat_times[i]*1000,0))
-    word_beat += "a"
-word_beat += "b"
-for i in range(0,length_beat):
-    word_beat += all[i]
-    word_beat += "a"
-
-
-# onset = []
-# onset_time = []
-# for i in range (0,len(beat_frames)):
-#     onset.append(onset_data[beat_frames[i]])
-#     onset_time.append(beat_times[i])
-
-
-# pygame.mixer.init()
-# low_sound = pygame.mixer.Sound("res/drum.wav")
-# low_sound.set_volume(0.6)
-# high_sound = pygame.mixer.Sound("res/high.wav")
-# high_sound.set_volume(1)
-# pygame.mixer.music.load(filename)
-# pygame.mixer.music.play()
-# start = time.time() #起始時間
-
-# i = 0
-# j = 0
-# while i < len(low_time) and j < len(high_time):
-#     if (time.time()-start) > low_time[i]-0.1:
-#         pygame.mixer.Sound.play(low_sound)
-#         # urllib.2
-#         # request.urlopen(r'http://192.168.130.253/H')
-#         # time.sleep(0.05)
-#         # urllib.request.urlopen(r'http://192.168.130.253/L')
-#         i+=1
-#     if (time.time()-start) > high_time[j]-0.1:
-#         pygame.mixer.Sound.play(high_sound)
-#         j+=1
+pygame.mixer.init()
+pygame.mixer.music.load(filename)
+pygame.mixer.music.play()
+print("start")
+start_time = time.time()
+index = 0
+while index < len(beat_times):
+    if time.time() - start_time > beat_times[index]:
+        print(all[index])
+        index += 1

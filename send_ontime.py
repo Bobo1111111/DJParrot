@@ -76,6 +76,7 @@ for i in range(0,length):
     to_send.append(a)
 print(frame_times)
 print(to_send)
+
 pygame.mixer.init()
 pygame.mixer.music.load(filename)
 pygame.mixer.music.play()
