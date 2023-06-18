@@ -23,7 +23,7 @@ def strength_fre(y,sr,fmax,fmin):
 
 # params
 threshold_of_beat = 5.5
-threshold_of_light = 50
+threshold_of_light = 100
 
 # Serial init
 
@@ -35,7 +35,7 @@ ser_LED = serial.Serial(COM_PORT_LED, BAUD_RATES)
 # ser_MOTOR = serial.Serial(COM_PORT_MOTOR, BAUD_RATES)
 
 # get data from mp3 file
-filename = 'res/wake-me-up-lyric-video.mp3'
+filename = 'res/swan-lake-cena-wu-ju-tian-e-hu-chang-jing.mp3'
 y, sr = librosa.load(filename)
 tempo, beat_frames = librosa.beat.beat_track(y=y, sr=sr)
 
